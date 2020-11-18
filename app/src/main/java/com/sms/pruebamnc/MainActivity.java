@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
         mGridData = new ArrayList<>();
         AdapterGrid = new AdapterGrid(this, mGridData);
 
-        GridLayoutManager gridLayoutManager= new GridLayoutManager(this, 3,GridLayoutManager.VERTICAL,false);
+        GridLayoutManager gridLayoutManager= new GridLayoutManager(this, 2,GridLayoutManager.VERTICAL,false);
         mGridView.setLayoutManager(gridLayoutManager);
         mGridView.setAdapter(AdapterGrid);
 
@@ -165,9 +165,15 @@ public class MainActivity extends Activity {
                 String urls = post.optString("urls");
                 JSONObject object = new JSONObject(urls);
                 String full=object.getString("full");
+                String user = post.optString("user");
+                JSONObject objectuser = new JSONObject(user);
+                String username=objectuser.getString("name");
+                String likes=post.getString("likes");
                 item = new GridItem();
                 item.setTitle(title);
                 item.setImage(full);
+                item.setLikes(likes);
+                item.setUsername((username));
 
                 Log.d("ur",full);
 
