@@ -28,66 +28,41 @@ public class OperacionesDB {
 	public void close() {
 		dbHelper.close();
 	}
-	/**
-	 * Nombre: obtenerUsuario Descripcion: Funcion para obtener los datos del
-	 * usuario
-	 *
-	 * @return
-	 */
-	public Cursor obtenerUsuario() {
-		return database
-				.rawQuery(
-						"SELECT userid AS _id, password, rememberpass, login FROM user as u;",
-						null);
-	}
-	/**
-	 Nombre: consultarUsuario
-	 Descripcion: Funcion para verificar si usuario  existe
-	 */
 
-	public boolean consultarUsuario(String iduser) {
-		if (database != null && database.isOpen()) {
-			Cursor cursor = null;
-			String parametro[] = new String[] { iduser };
-			try {
-				cursor = database.rawQuery(
-						"SELECT userid AS _id from user where userid=?",
-						parametro);
-				if (cursor.getCount() == 0) {
-					estado = false;
-				} else {
-					estado = true;
-				}
-			} finally {
-				if (cursor != null) {
-					cursor.close();
-				}
-			}
-		}
-		return estado;
 
-	}
 	/**
 	 Nombre: deleteUsuarios
 	 Descripcion: Funcion para eliminar todos los usuarios que existan en la base local
 	 */
-	public boolean deleteUsuarios() {
+	public boolean deleteDetalleImagen(String id) {
 		boolean transact = false;
 		if (database != null && database.isOpen()) {
-			transact = database.delete("user", null, null) > 0;
+			transact = database.delete(detallefotos, "id= ?", new String[]{id}) > 0;
 		}
 		return (transact);
 	}
 
 
-	public boolean insertarDetalleImagen(String autor, String numerolike,
-								   String urlimagen, String favorito) {
-
+	public boolean insertarDetalleImagen(String id,String autor, String numerolike,String urlimagen, String favorito) {
 		ContentValues values = new ContentValues();
+		values.put("id", id);
 		values.put("autor", autor);
 		values.put("numerolike", numerolike);
 		values.put("urlimagen", urlimagen);
 		values.put("favorito", favorito);
 		return (database.insert(detallefotos, null, values) > 0);
+	}
+
+	public Cursor obtenerIdImagen(String id) {
+		String parametros[] = new String[] { id};
+		return database.rawQuery("select count(*) as cantidad from detallefotos where id=?", parametros);
+	}
+	public Cursor obtenerCantidadIdImagen() {
+		return database.rawQuery("select count(*) as cantidad from detallefotos ", null);
+	}
+
+	public Cursor obtenerFavoritos() {
+		return database
+				.rawQuery("select id, urlimagen  ,autor ,numerolike from detallefotos", null);
 	}
 }

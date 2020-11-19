@@ -1,21 +1,20 @@
 package com.sms.pruebamnc;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -39,12 +38,16 @@ public class MainActivity extends Activity {
     private ArrayList<GridItem> mGridData;
     private String FEED_URL = "https://api.unsplash.com/search/photos?per_page=10&query=dog&client_id=iXHorfs-BfQaP5rudcMTm1z4Zfvm4HTevHWZdPKiYso";
     private AdapterGrid AdapterGrid;
+    private OperacionesDB db;
+    private Cursor cursor;
+    String favoritoGuardado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        db = new OperacionesDB(getApplicationContext());
+        db.open();
 
         mGridView =  findViewById(R.id.my_recycler_view);
         mProgressBar = findViewById(R.id.progressBar);
@@ -55,37 +58,26 @@ public class MainActivity extends Activity {
         mGridView.setLayoutManager(gridLayoutManager);
         mGridView.setAdapter(AdapterGrid);
 
-        //Grid view click event
-       /* mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                //Get item at position
-                GridItem item = (GridItem) parent.getItemAtPosition(position);
 
-                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                ImageView imageView = (ImageView) v.findViewById(R.id.grid_item_image);
-
-                // Interesting data to pass across are the thumbnail size/location, the
-                // resourceId of the source bitmap, the picture description, and the
-                // orientation (to avoid returning back to an obsolete configuration if
-                // the device rotates again in the meantime)
-
-                int[] screenLocation = new int[2];
-                imageView.getLocationOnScreen(screenLocation);
-
-                //Pass the image title and url to DetailsActivity
-                intent.putExtra("left", screenLocation[0]).
-                        putExtra("top", screenLocation[1]).
-                        putExtra("width", imageView.getWidth()).
-                        putExtra("height", imageView.getHeight()).
-                        putExtra("title", item.getTitle()).
-                        putExtra("image", item.getImage());
-
-                //Start details activity
-                startActivity(intent);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cursor = db.obtenerCantidadIdImagen();
+                if (cursor.moveToFirst()) {
+                    do {
+                        favoritoGuardado=cursor.getString(0);//id
+                    }
+                    while (cursor.moveToNext());
+                }
+                if(!favoritoGuardado.equals("0")){
+                    Intent i = new Intent(getApplicationContext(), Favoritos.class);
+                    startActivity(i);
+                }else{
+                    Toast.makeText(getApplicationContext(),"No tiene imagenes marcadas como favoritos",Toast.LENGTH_SHORT).show();
+                }
             }
-        });*/
-
-        //Start download
+        });
         new AsyncHttpTask().execute(FEED_URL);
         mProgressBar.setVisibility(View.VISIBLE);
     }
@@ -156,6 +148,7 @@ public class MainActivity extends Activity {
      */
     private void parseResult(String result) {
         try {
+
             JSONObject response = new JSONObject(result);
             JSONArray posts = response.optJSONArray("results");
             GridItem item;
@@ -169,14 +162,13 @@ public class MainActivity extends Activity {
                 JSONObject objectuser = new JSONObject(user);
                 String username=objectuser.getString("name");
                 String likes=post.getString("likes");
+                String id=post.getString("id");
                 item = new GridItem();
                 item.setTitle(title);
                 item.setImage(full);
                 item.setLikes(likes);
+                item.setId(id);
                 item.setUsername((username));
-
-                Log.d("ur",full);
-
                 mGridData.add(item);
             }
         } catch (JSONException e) {

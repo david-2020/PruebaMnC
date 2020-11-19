@@ -1,7 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f0f0f0">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#f0f0f0"
+    android:orientation="vertical">
 
    <!-- <GridView
         android:id="@+id/gridView"
@@ -15,12 +17,26 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        app:tint="@color/Red"
+        android:contentDescription="Favorito"
+        android:text="Favorito"
+        android:src="@drawable/favorite"
+        android:layout_margin="16dp" />
+
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
+        android:layout_gravity="center"
         android:layout_centerInParent="true"
         android:visibility="gone"/>
 
 
-</RelativeLayout>
+
+
+</FrameLayout>

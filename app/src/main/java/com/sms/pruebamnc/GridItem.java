@@ -1,10 +1,20 @@
 package com.sms.pruebamnc;
 
 public class GridItem {
+    private String id;
     private String image;
     private String title;
     private  String username;
     private String likes;
+    private String favorito;
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public GridItem() {
         super();
@@ -40,5 +50,13 @@ public class GridItem {
 
     public void setLikes(String likes) {
         this.likes = likes;
+    }
+
+    public void setFavorito(String favorito) {
+        this.favorito = favorito;
+    }
+
+    public String getFavorito() {
+        return favorito;
     }
 }
